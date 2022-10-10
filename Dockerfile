@@ -12,20 +12,17 @@
 # ENTRYPOINT ["./main", "-v" ,"1.0"]
 
 
-FROM ly-union-registry.cn-beijing.cr.aliyuncs.com/taishan/alpine-builder:latest AS builder
+FROM golang:latest AS build
 
 WORKDIR /build
 RUN adduser -u 10001 -D app-runner
 
-#COPY go.mod .
-#COPY go.sum .
 COPY . .
 
 RUN go mod download
-
 RUN CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -a -o main .
 
-FROM ly-union-registry.cn-beijing.cr.aliyuncs.com/taishan/alpine3.13:timezone AS final
+FROM alpine AS final
 
 WORKDIR /app
 COPY --from=builder /build/main /app/
@@ -36,5 +33,5 @@ COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 RUN mkdir -p /app/log && chown -R app-runner:10001 /app/log && mkdir -p /app/cache && chown -R app-runner:10001 /app/cache
 
 USER app-runner
-ENTRYPOINT ["/app/main"]
+ENTRYPOINT ["/app/main", "-v" ,"1.0.1"]
 
