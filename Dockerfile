@@ -33,4 +33,4 @@ COPY --from=builder /build/main /app/
 #RUN mkdir -p /app/log && chown -R app-runner:10001 /app/log && mkdir -p /app/cache && chown -R app-runner:10001 /app/cache
 
 #USER app-runner
-ENTRYPOINT ["/app/main", "-v" ,"1.0.3"]
+ENTRYPOINT ["/app/main"]
